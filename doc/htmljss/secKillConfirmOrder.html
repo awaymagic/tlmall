@@ -52,7 +52,7 @@
       <div class="item-order">
         <div class="icon-succ"></div>
         <div class="order-info">
-          <h4>订单号：{{orderSn}}</h4>
+          <h4>订单号：<span class="orderId"></span></h4>
           <h2>秒杀成功！去付款咯～</h2>
           <p>请在<span>30分</span>内完成支付, 超时后将取消订单</p>
           <p>收货信息：{{addressInfo}}</p>
@@ -195,11 +195,13 @@
                   "productId="+lProductId
                   +"&flashPromotionId="+lFlashPromotionId,
           success:function(commonresult){
+            alert(commonresult);
             if(commonresult.code == 200){
               console.log("成功获得秒杀确认单！");
               var data = commonresult.data;
               console.log(commonresult);
               $("#orderId").val(data.orderId);
+              $("orderId").html(data.orderId);
               localStorage.setItem("orderId",data.orderId);
               var calcAmount = data.calcAmount;
               $("#calcAmount").val(calcAmount.totalAmount);
