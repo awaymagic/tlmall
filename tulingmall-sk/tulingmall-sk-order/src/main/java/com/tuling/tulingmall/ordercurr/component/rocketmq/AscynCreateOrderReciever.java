@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
  **/
 @Slf4j
 @Component
-@RocketMQMessageListener(topic = "${rocketmq.tulingmall.asyncOrderTopicSk}",
-        consumerGroup = "${rocketmq.tulingmall.asyncOrderGroupSk}")
+//@RocketMQMessageListener(topic = "${rocketmq.tulingmall.asyncOrderTopicSk}",
+//        consumerGroup = "${rocketmq.tulingmall.asyncOrderGroupSk}")
 public class AscynCreateOrderReciever implements RocketMQListener<OrderMessage> {
 
     @Autowired

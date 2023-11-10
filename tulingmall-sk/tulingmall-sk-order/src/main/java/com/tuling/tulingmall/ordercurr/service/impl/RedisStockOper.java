@@ -33,7 +33,7 @@ public class RedisStockOper {
     private final static String STOCK_LUA = "local c_s = redis.call('get', KEYS[1]);" +
             "if not c_s or tonumber(c_s) < tonumber(ARGV[1]) then " +
             "return -1 end " +
-            "redis.call('decrby',KEYS[1], ARGV[1])";
+            "return redis.call('decrby',KEYS[1], ARGV[1])";
     @Autowired
     @Qualifier("redisSingleTemplate")
     private RedisTemplate redisTemplate;

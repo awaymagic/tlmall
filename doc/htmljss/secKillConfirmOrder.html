@@ -52,18 +52,18 @@
       <div class="item-order">
         <div class="icon-succ"></div>
         <div class="order-info">
-          <h4>订单号：{{orderSn}}</h4>
+          <!-- h4>订单号：<span class="orderId"></span></h4 -->
           <h2>秒杀成功！去付款咯～</h2>
           <p>请在<span>30分</span>内完成支付, 超时后将取消订单</p>
-          <p>收货信息：{{addressInfo}}</p>
+          <!-- p>收货信息：{{addressInfo}}</p -->
         </div>
 
         <div class="order-total">
-          <p>应付总额：</p>
-          <input id="calcAmount" type="text" readonly>
-          <p>订单详情<em class="icon-down" :class="{'up':showDetail}" @click="showDetail=!showDetail"></em></p>
-          <input id="cartPromotionItemList" type="textarea" readonly  autoHeight="true">
-          <span><em>订单详情ID：</em></span>
+          应付总额：
+          <input id="calcAmount" type="text" readonly><p />
+          商品名称：<!-- em class="icon-down" :class="{'up':showDetail}" @click="showDetail=!showDetail"></em -->
+          <input id="cartPromotionItemList" type="textarea" readonly  autoHeight="true"><p />
+          订单详情ID：
           <input id="orderItemId" type="text" readonly>
         </div>
       </div>
@@ -78,21 +78,25 @@
           <div class="detail-title">收货信息：</div>
           <div class="detail-info">
             <input id="memberReceiveAddressList" type="textarea" readonly autoHeight="true">
-            <span><em>实际使用用户地址：</em></span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="detail-title">实际使用地址：</div>
+          <div class="detail-info">
             <input id="factAddress" type="text" readonly>
           </div>
         </div>
-        <div class="item good">
+        <!-- div class="item good">
           <div class="detail-title">商品名称：</div>
           <div class="detail-info">
             <ul>
               <li v-for="(item,index) in orderDetail" :key="index">
-                <img v-lazy="item.productImage" />{{item.productName}}
+                <img v-lazy="item.productImage" />item.productName
               </li>
             </ul>
           </div>
-        </div>
-        <div class="item">
+        </div -->
+        <div class="item good">
           <div class="detail-title">发票信息：</div>
           <div class="detail-info">电子发票 个人</div>
         </div>
