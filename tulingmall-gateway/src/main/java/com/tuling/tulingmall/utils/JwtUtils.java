@@ -122,8 +122,8 @@ public class JwtUtils {
     }
 
     public static Claims validateJwtToken(String authHeader,PublicKey publicKey) {
-        String token =null ;
-        try{
+        String token = null;
+        try {
             token = StringUtils.substringAfter(authHeader, AUTH_HEADER);
 
             Jwt<JwsHeader, Claims> parseClaimsJwt = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token);
@@ -134,9 +134,9 @@ public class JwtUtils {
 
             return claims;
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
-            log.error("校验token异常:{},异常信息:{}",token,e.getMessage());
+            log.error("校验token异常:{},异常信息:{}", token, e.getMessage());
 
             throw new GateWayException(ResultCode.JWT_TOKEN_EXPIRE);
         }

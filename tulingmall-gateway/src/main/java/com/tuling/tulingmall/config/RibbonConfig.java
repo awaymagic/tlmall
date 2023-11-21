@@ -32,16 +32,13 @@ public class RibbonConfig {
 //    }
 
     /**
-     *
      * 手动注入loadBalancerInterceptor拦截器，实现负载均衡功能
-     * @param loadBalancerInterceptor
-     * @return
-     *
+     * 因为注解的方式负载均衡是在初始化之后，我们使用的地方生成公钥的位置是在启动时初始化中
      */
     @Bean
     public RestTemplate restTemplate(LoadBalancerInterceptor loadBalancerInterceptor){
         RestTemplate restTemplate = new RestTemplate();
-        List<ClientHttpRequestInterceptor> list = new ArrayList();
+        List<ClientHttpRequestInterceptor> list = new ArrayList<>();
         list.add(loadBalancerInterceptor);
         restTemplate.setInterceptors(list);
         return restTemplate;

@@ -29,6 +29,7 @@ public class TulingRestTemplate extends RestTemplate {
         this.discoveryClient = discoveryClient;
     }
 
+    @Override
     protected <T> T doExecute(URI url, @Nullable HttpMethod method, @Nullable RequestCallback requestCallback,
                               @Nullable ResponseExtractor<T> responseExtractor) throws RestClientException {
 

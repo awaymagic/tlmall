@@ -54,9 +54,7 @@ public class TulingUserDetailService implements UserDetailsService {
 
         log.info("根据用户名:{}获取用户登陆信息:{}",userName,umsMember);
 
-        MemberDetails memberDetails = new MemberDetails(umsMember);
-
-        return memberDetails;
+        return new MemberDetails(umsMember);
     }
 
     /**

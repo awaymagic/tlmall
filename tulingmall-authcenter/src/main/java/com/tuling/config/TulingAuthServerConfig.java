@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.security.KeyPair;
 import java.util.Arrays;
@@ -38,26 +39,18 @@ import java.util.Arrays;
 @EnableConfigurationProperties(value = JwtCAProperties.class)
 public class TulingAuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
-
-    @Autowired
+    @Resource
     private AuthenticationManager authenticationManager;
-
-    @Autowired
+    @Resource
     private DataSource dataSource;
-
-    @Autowired
+    @Resource
     private TulingUserDetailService tulingUserDetailService;
-
-    @Autowired
+    @Resource
     private JwtCAProperties jwtCAProperties;
 
 
     /**
      * 方法实现说明:我们颁发的token通过jwt存储
-     * @author:smlz
-     * @return:
-     * @exception:
-     * @date:2020/1/21 21:49
      */
     @Bean
     public TokenStore tokenStore(){
@@ -67,32 +60,33 @@ public class TulingAuthServerConfig extends AuthorizationServerConfigurerAdapter
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        //jwt的密钥
+        // jwt的密钥
         converter.setKeyPair(keyPair());
         return converter;
     }
 
     @Bean
     public KeyPair keyPair() {
-        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource(jwtCAProperties.getKeyPairName()), jwtCAProperties.getKeyPairSecret().toCharArray());
-        return keyStoreKeyFactory.getKeyPair(jwtCAProperties.getKeyPairAlias(), jwtCAProperties.getKeyPairStoreSecret().toCharArray());
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(
+                new ClassPathResource(jwtCAProperties.getKeyPairName()),
+                jwtCAProperties.getKeyPairSecret().toCharArray());
+
+        return keyStoreKeyFactory.getKeyPair(
+                jwtCAProperties.getKeyPairAlias(),
+                jwtCAProperties.getKeyPairStoreSecret().toCharArray());
     }
 
-
+    /**
+     * 增强
+     */
     @Bean
     public TulingTokenEnhancer tulingTokenEnhancer() {
         return new TulingTokenEnhancer();
     }
 
-
-
     /**
      * 方法实现说明:认证服务器能够给哪些 客户端颁发token  我们需要把客户端的配置 存储到
      * 数据库中 可以基于内存存储和db存储
-     * @author:smlz
-     * @return:
-     * @exception:
-     * @date:2020/1/15 20:18
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -101,10 +95,6 @@ public class TulingAuthServerConfig extends AuthorizationServerConfigurerAdapter
 
     /**
      * 方法实现说明:用于查找我们第三方客户端的组件 主要用于查找 数据库表 oauth_client_details
-     * @author:smlz
-     * @return:
-     * @exception:
-     * @date:2020/1/15 20:19
      */
     @Bean
     public ClientDetailsService clientDetails() {
@@ -113,36 +103,30 @@ public class TulingAuthServerConfig extends AuthorizationServerConfigurerAdapter
 
     /**
      * 方法实现说明:授权服务器的配置的配置
-     * @author:smlz
-     * @return:
-     * @exception:
-     * @date:2020/1/15 20:21
      */
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tulingTokenEnhancer(),jwtAccessTokenConverter()));
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tulingTokenEnhancer(), jwtAccessTokenConverter()));
 
-        endpoints.tokenStore(tokenStore()) //授权服务器颁发的token 怎么存储的
+        // 授权服务器颁发的token 怎么存储的
+        endpoints.tokenStore(tokenStore())
                 .tokenEnhancer(tokenEnhancerChain)
-                .userDetailsService(tulingUserDetailService) //用户来获取token的时候需要 进行账号密码
+                // 用户来获取token的时候需要 进行账号密码
+                .userDetailsService(tulingUserDetailService)
                 .authenticationManager(authenticationManager);
     }
 
 
     /**
      * 方法实现说明:授权服务器安全配置
-     * @author:smlz
-     * @return:
-     * @exception:
-     * @date:2020/1/15 20:23
      */
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        //第三方客户端校验token需要带入 clientId 和clientSecret来校验
+    public void configure(AuthorizationServerSecurityConfigurer security) {
+        // 第三方客户端校验token需要带入 clientId 和 clientSecret 来校验
         security .checkTokenAccess("isAuthenticated()")
-                 .tokenKeyAccess("isAuthenticated()");//来获取我们的tokenKey需要带入clientId,clientSecret
+                // 来获取我们的tokenKey需要带入clientId,clientSecret
+                 .tokenKeyAccess("isAuthenticated()");
 
         security.allowFormAuthenticationForClients();
     }
