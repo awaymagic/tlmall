@@ -64,8 +64,8 @@ public class OmsOrderItemShardingAlgorithm implements ComplexKeysShardingAlgorit
             int tableSize = availableTargetNames.size();
             /* 提取范围查询的范围*/
             Range<String> rangeUserId = complexKeysShardingValue.getColumnNameAndRangeValuesMap().get(COLUMN_SHARDING_KEY);
-            Long lower = Long.valueOf(rangeUserId.lowerEndpoint());
-            Long upper = Long.valueOf(rangeUserId.lowerEndpoint());
+            long lower = Long.parseLong(rangeUserId.lowerEndpoint());
+            long upper = Long.parseLong(rangeUserId.lowerEndpoint());
             /*根据order_sn选择表*/
             for (String tableNameItem : availableTargetNames) {
                 if (tableNameItem.endsWith(String.valueOf(lower % (tableSize -1 )))

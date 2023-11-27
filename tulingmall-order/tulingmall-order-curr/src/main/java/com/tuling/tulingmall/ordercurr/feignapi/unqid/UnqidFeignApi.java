@@ -14,9 +14,10 @@ import java.util.List;
 public interface UnqidFeignApi {
 
     @RequestMapping(value = "/api/segment/get/{key}")
-    public String getSegmentId(@PathVariable("key") String key) ;
+    String getSegmentId(@PathVariable("key") String key) ;
 
     @RequestMapping(value = "/api/segment/getlist/{key}")
-    public List<String> getSegmentIdList(@PathVariable("key") String key,@RequestParam("keyNumber") int keyNumber) ;
+    List<String> getSegmentIdList(@PathVariable("key") String key,
+                                  @RequestParam("keyNumber") int keyNumber);
 
 }

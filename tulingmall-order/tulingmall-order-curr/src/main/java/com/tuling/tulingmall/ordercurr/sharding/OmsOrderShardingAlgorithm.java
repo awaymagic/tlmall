@@ -42,8 +42,12 @@ public class OmsOrderShardingAlgorithm implements ComplexKeysShardingAlgorithm<S
 
                 /*合并订单id和客户id到一个容器中*/
                 List<String> ids = new ArrayList<>(16);
-                if (Objects.nonNull(orderSns)) ids.addAll(ids2String(orderSns));
-                if (Objects.nonNull(customerIds)) ids.addAll(ids2String(customerIds));
+                if (Objects.nonNull(orderSns)) {
+                    ids.addAll(ids2String(orderSns));
+                }
+                if (Objects.nonNull(customerIds)) {
+                    ids.addAll(ids2String(customerIds));
+                }
 
                 return ids.stream()
                          /*截取 订单号或客户id的后2位*/
@@ -70,8 +74,8 @@ public class OmsOrderShardingAlgorithm implements ComplexKeysShardingAlgorithm<S
             int tableSize = availableTargetNames.size();
             /* 提取范围查询的范围*/
             Range<String> rangeUserId = complexKeysShardingValue.getColumnNameAndRangeValuesMap().get(COLUMN_ORDER_SHARDING_KEY);
-            Long lower = Long.valueOf(rangeUserId.lowerEndpoint());
-            Long upper = Long.valueOf(rangeUserId.lowerEndpoint());
+            long lower = Long.parseLong(rangeUserId.lowerEndpoint());
+            long upper = Long.parseLong(rangeUserId.lowerEndpoint());
             /*根据order_sn选择表*/
             for (String tableNameItem : availableTargetNames) {
                 if (tableNameItem.endsWith(String.valueOf(lower % (tableSize -1 )))

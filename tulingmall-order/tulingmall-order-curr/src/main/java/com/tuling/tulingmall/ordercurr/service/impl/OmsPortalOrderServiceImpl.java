@@ -133,34 +133,37 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
      * 生成订单的orderId
      * @param memberId 用户ID
      */
+    @Override
     public Long generateOrderId(Long memberId){
         String leafOrderId = unqidFeignApi.getSegmentId(OrderConstant.LEAF_ORDER_ID_KEY);
         String strMemberId = memberId.toString();
-        String OrderIdTail = memberId < 10 ? "0" + strMemberId
+        String orderIdTail = memberId < 10 ? "0" + strMemberId
                 : strMemberId.substring(strMemberId.length() - 2);
-        log.debug("生成订单的orderId，组成元素为：{},{}",leafOrderId,OrderIdTail);
-        return Long.valueOf(leafOrderId + OrderIdTail) ;
+        log.debug("生成订单的orderId，组成元素为：{},{}", leafOrderId, orderIdTail);
+        return Long.valueOf(leafOrderId + orderIdTail);
     }
+
     /**
      * 生成订单
-     * @param orderParam
-     * @return
+     * @param orderParam    订单详情
+     * @return              result
      */
     @Override
     //@GlobalTransactional(name = "generateOrder",rollbackFor = Exception.class)
     @Transactional
     public CommonResult generateOrder(OrderParam orderParam, Long memberId) {
-        log.debug("接受参数OrderParam：{} memberId：{}",orderParam,memberId);
-        if(null == orderParam || null == memberId){
-            return CommonResult.failed(ResultCode.VALIDATE_FAILED,"参数不能为空！");
+        log.debug("接受参数OrderParam：{} memberId：{}", orderParam, memberId);
+        if (null == orderParam || null == memberId) {
+            return CommonResult.failed(ResultCode.VALIDATE_FAILED, "参数不能为空！");
         }
         Long orderId = orderParam.getOrderId();
-        if(null == orderId || orderId <= 0){
+        if (null == orderId || orderId <= 0) {
             orderId = generateOrderId(memberId);
-            log.debug("前端页面未传递orderId，临时生成：{}",orderId);
-        }else{
-            log.debug("前端页面传递orderId[{}]",orderId);
+            log.debug("前端页面未传递orderId，临时生成：{}", orderId);
+        } else {
+            log.debug("前端页面传递orderId[{}]", orderId);
         }
+        // 也可以使用布隆过滤器，判断是否下过单(解决重复下单
         /*这里我们对OrderSn简单处理，在实际业务时可以根据情况做变化，比如添加前缀或可逆加密，
         只要保证可以从OrderSn中解析出orderId即可，方便根据OrderSn进行查询*/
         String orderSn = orderId.toString();
@@ -173,7 +176,7 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         /*一次获取多个OrderItem的id，但是可能获取的数量少于订单详情数*/
         List<String> omsOrderItemIDList = unqidFeignApi.getSegmentIdList(OrderConstant.LEAF_ORDER_ITEM_ID_KEY,
                 itemSize);
-        log.debug("获得订单详情的ID：{}，需求{}个，实际{}个" ,omsOrderItemIDList,itemSize,omsOrderItemIDList.size());
+        log.debug("获得订单详情的ID：{}，需求{}个，实际{}个", omsOrderItemIDList, itemSize, omsOrderItemIDList.size());
         int itemListIndex = 0;
         for (CartPromotionItem cartPromotionItem : cartPromotionItemList) {
             //生成下单商品信息
@@ -195,9 +198,9 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
             orderItem.setGiftGrowth(cartPromotionItem.getGrowth());
             orderItem.setOrderId(orderId);
             orderItem.setOrderSn(orderSn);
-            if(itemListIndex < itemSize){
+            if (itemListIndex < itemSize) {
                 orderItem.setId(Long.valueOf(omsOrderItemIDList.get(itemListIndex)));
-            }else{
+            } else {
                 log.warn("从分布式ID服务获得的id已经用完，可能订单详情太多或分布式ID服务出错，请检查！" +
                         "正尝试每个订单详情单独获得id");
                 orderItem.setId(Long.valueOf(unqidFeignApi.getSegmentId(OrderConstant.LEAF_ORDER_ITEM_ID_KEY)));
@@ -211,7 +214,7 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         handleRealAmount(orderItemList);
         //todo 分布式事务 进行库存锁定
         CommonResult lockResult = pmsProductStockFeignApi.lockStock(cartPromotionItemList);
-        if(lockResult.getCode() ==ResultCode.FAILED.getCode()) {
+        if (lockResult.getCode() == ResultCode.FAILED.getCode()) {
             log.warn("远程调用锁定库存失败");
             throw new RuntimeException("远程调用锁定库存失败");
         }
@@ -284,14 +287,18 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         return CommonResult.success(result, "下单成功");
     }
 
-    private void useCoupon(Long couponId,Long orderId,String ordersn) {
-        promotionFeignApi.useCoupon(couponId,orderId,ordersn);
+    /**
+     * 使用的优惠券扣减
+     */
+    private void useCoupon(Long couponId, Long orderId, String ordersn) {
+        promotionFeignApi.useCoupon(couponId, orderId, ordersn);
     }
 
     /**
      * 订单详情
      * @param orderId
      */
+    @Override
     public CommonResult getDetailOrder(Long orderId) {
         return CommonResult.success(portalOrderDao.getDetail(orderId));
     }

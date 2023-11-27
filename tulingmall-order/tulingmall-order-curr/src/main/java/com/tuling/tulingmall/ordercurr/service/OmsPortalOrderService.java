@@ -30,7 +30,7 @@ public interface OmsPortalOrderService {
      * 生成订单的orderId
      * @param memberId 用户ID
      */
-    public Long generateOrderId(Long memberId);
+    Long generateOrderId(Long memberId);
     /**
      * 订单详情
      * @param orderId
