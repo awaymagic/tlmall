@@ -11,8 +11,8 @@ public interface MigrateCentreService {
     String migrateTablesOrders();
 
     /*停止迁移*/
-    public void stopMigrate();
+    void stopMigrate();
 
     /*恢复迁移*/
-    public void recoverMigrate();
+    void recoverMigrate();
 }

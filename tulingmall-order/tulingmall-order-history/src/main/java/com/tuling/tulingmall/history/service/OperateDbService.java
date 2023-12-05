@@ -1,7 +1,5 @@
 package com.tuling.tulingmall.history.service;
 
-
-import com.tuling.tulingmall.common.api.CommonResult;
 import com.tuling.tulingmall.history.domain.OmsOrderDetail;
 import org.springframework.transaction.annotation.Transactional;
 
